@@ -53,7 +53,7 @@ def get_args():
     parser.add_argument('--learning_rate2', default=1e-5, type=float)
 
 
-    parser.add_argument('--num_epochs', default=10, type=int)
+    parser.add_argument('--num_epochs', default=100, type=int)
     parser.add_argument('--batch_size', '-bs', type=int, default=32, help='number of batches')
 
     parser.add_argument('--restart_dataloader_config', type=str, default=None)
@@ -61,20 +61,7 @@ def get_args():
 
     return parser.parse_args()
 
-def main():
-    random.seed(1234)
-    np.random.seed(1234)
-    tf.random.set_seed(1234)
-
-
-
-
-    tf.keras.backend.set_floatx('float32')
-    args = get_args()
-    if not os.path.exists(args.output_path):
-        os.makedirs(args.output_path)
-
-
+def check_corrupted_images(args):
     train_datagen = tf.keras.preprocessing.image.ImageDataGenerator(
                                        validation_split=0.2)
 
@@ -97,6 +84,28 @@ def main():
     for path in train_generator.filepaths:
         print(path )
         Image.open(path)
+
+    for path in validation_generator.filepaths:
+        print(path )
+        Image.open(path)
+
+def main():
+    random.seed(1234)
+    np.random.seed(1234)
+    tf.random.set_seed(1234)
+
+
+
+
+    tf.keras.backend.set_floatx('float32')
+    args = get_args()
+    if not os.path.exists(args.output_path):
+        os.makedirs(args.output_path)
+
+    # check_corrupted_images(args)
+
+
+
 
 
 
