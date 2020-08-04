@@ -107,7 +107,7 @@ def main():
     optimizer = tf.keras.optimizers.Adam(learning_rate=args.learning_rate1)
     loss = tf.keras.losses.CategoricalCrossentropy()
 
-    network.compile(optimizer=optimizer, loss=loss, metrics=['accuracy'], run_eagerly=True)
+    network.compile(optimizer=optimizer, loss=loss, metrics=['accuracy'])
 
     checkpoint = ModelCheckpoint("vgg16_1.h5", monitor='val_acc', verbose=1, save_best_only=True,
                                  save_weights_only=False, mode='auto', save_freq=1)
