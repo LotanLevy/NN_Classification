@@ -12,6 +12,8 @@ import random
 from tensorflow.python.keras.callbacks import ModelCheckpoint, EarlyStopping
 
 import matplotlib.pyplot as plt
+from PIL import Image
+import io
 
 
 
@@ -72,6 +74,32 @@ def main():
     if not os.path.exists(args.output_path):
         os.makedirs(args.output_path)
 
+
+    train_datagen = tf.keras.preprocessing.image.ImageDataGenerator(
+                                       validation_split=0.2)
+
+    train_generator = train_datagen.flow_from_directory(args.ds_path,
+                                                       subset="training",
+                                                       seed=123,
+                                                       shuffle=True,
+                                                       class_mode="categorical",
+                                                       target_size=args.input_size,
+                                                       batch_size=args.batch_size)
+
+    validation_generator = train_datagen.flow_from_directory(args.ds_path,
+                                             subset="validation",
+                                             seed=123,
+                                             shuffle=True,
+                                             class_mode="categorical",
+                                             target_size=args.input_size,
+                                             batch_size=args.batch_size)
+
+    for path in train_generator.filepaths:
+        print(path )
+        Image.open(path)
+
+
+
     train_datagen = tf.keras.preprocessing.image.ImageDataGenerator(
                                        validation_split=0.2)
 
@@ -122,4 +150,8 @@ def main():
 
 
 if __name__ == "__main__":
+
+
+
+
     main()
