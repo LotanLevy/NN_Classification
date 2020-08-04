@@ -3,9 +3,7 @@ from Networks.NNInterface import NNInterface
 from tensorflow.python.keras.applications import vgg16
 import os
 from keras.models import Sequential
-from keras.layers import Dense, Conv2D, MaxPool2D , Flatten
-
-
+from keras.layers import Dense, Conv2D, MaxPool2D, Flatten
 
 import tensorflow as tf
 
@@ -14,18 +12,18 @@ class VGGModel(NNInterface):
     def __init__(self, classes_num, input_size):
         super().__init__(classes_num, input_size)
         self.output_path = None
-        self.__model = vgg16.VGG16(weights=None, classes=classes_num, input_shape=(input_size[0], input_size[0], 3))
-        # vgg_conv.summary()
-        #
-        # # for layer in vgg_conv.layers[:]:
-        # #     layer.trainable = False
-        #
-        # self.__model = tf.keras.Sequential()
-        # self.__model.add(vgg_conv)
-        # self.__model.add(tf.keras.layers.Flatten())
-        # self.__model.add(tf.keras.layers.Dense(4096, activation='relu'))
-        # self.__model.add(tf.keras.layers.Dense(4096, activation='relu'))
-        # self.__model.add(tf.keras.layers.Dense(classes_num, activation='softmax'))
+        vgg_conv = vgg16.VGG16(weights=None, include_top=False, classes=classes_num, input_shape=(input_size[0], input_size[0], 3))
+        vgg_conv.summary()
+
+        for layer in vgg_conv.layers[:]:
+            layer.trainable = False
+
+        self.__model = tf.keras.Sequential()
+        self.__model.add(vgg_conv)
+        self.__model.add(tf.keras.layers.Flatten())
+        self.__model.add(tf.keras.layers.Dense(4096, activation='relu'))
+        self.__model.add(tf.keras.layers.Dense(4096, activation='relu'))
+        self.__model.add(tf.keras.layers.Dense(classes_num, activation='softmax'))
 
         self.__model.summary()
 
@@ -35,7 +33,8 @@ class VGGModel(NNInterface):
 
     def build_fill_vgg_model(self, classes_num, input_size):
         model = Sequential()
-        model.add(Conv2D(input_shape=(input_size[0], input_size[1], 3), filters=64, kernel_size=(3, 3), padding="same", activation="relu"))
+        model.add(Conv2D(input_shape=(input_size[0], input_size[1], 3), filters=64, kernel_size=(3, 3), padding="same",
+                         activation="relu"))
         model.add(Conv2D(filters=64, kernel_size=(3, 3), padding="same", activation="relu"))
         model.add(MaxPool2D(pool_size=(2, 2), strides=(2, 2)))
         model.add(Conv2D(filters=128, kernel_size=(3, 3), padding="same", activation="relu"))
@@ -65,10 +64,7 @@ class VGGModel(NNInterface):
     def get_model_object(self):
         return self.__model
 
-
-
-
-    def call(self, x, training=True):
+    def call(self, x, training=False, **kwargs):
         x = vgg16.preprocess_input(x)
         return self.__model(x, training=training)
 
@@ -95,5 +91,3 @@ class VGGModel(NNInterface):
         output_path = os.getcwd() if self.output_path is None else self.output_path
         output_path = os.path.join(output_path, "last_ckpts")
         return os.path.join(output_path, "ckpt")
-
-
