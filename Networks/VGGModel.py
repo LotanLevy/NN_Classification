@@ -15,8 +15,8 @@ class VGGModel(NNInterface):
         vgg_conv = vgg16.VGG16(weights=None, include_top=False, classes=classes_num, input_shape=(input_size[0], input_size[0], 3))
         vgg_conv.summary()
 
-        for layer in vgg_conv.layers[:]:
-            layer.trainable = False
+        # for layer in vgg_conv.layers[:]:
+        #     layer.trainable = False
 
         self.__model = tf.keras.Sequential()
         self.__model.add(vgg_conv)
