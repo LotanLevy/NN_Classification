@@ -55,6 +55,8 @@ def get_args():
 
 
     parser.add_argument('--num_epochs', default=100, type=int)
+    parser.add_argument('--workers', default=4, type=int)
+
     parser.add_argument('--batch_size', '-bs', type=int, default=32, help='number of batches')
 
     parser.add_argument('--restart_dataloader_config', type=str, default=None)
@@ -177,7 +179,8 @@ def main():
     csv_logger = CSVLogger(os.path.join(args.output_path, 'log.csv'), append=True, separator=';')
 
     hist = network.fit_generator(generator=train_generator, steps_per_epoch=len(train_generator), validation_data=validation_generator, validation_steps=10,
-                               epochs=args.num_epochs, callbacks=[checkpoint, csv_logger, tensorboard_callback], workers=4, use_multiprocessing=True)
+                               epochs=args.num_epochs, callbacks=[checkpoint, csv_logger, tensorboard_callback],
+                                 workers=args.workers, use_multiprocessing=True)
 
 
 
