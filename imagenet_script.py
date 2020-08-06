@@ -38,6 +38,8 @@ for dir in dirs:
 
 for i in range(len(paths)):
     path = paths[i]
+    if not os.path.exists(path):
+        continue
     dir_path = os.path.join(args.output_path, str(labels[i]))
     image_name = os.path.basename(path)
     args.output_path = os.path.join(dir_path, image_name)
