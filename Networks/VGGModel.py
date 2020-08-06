@@ -22,7 +22,10 @@ class VGGModel(NNInterface):
         self.__model.add(vgg_conv)
         self.__model.add(tf.keras.layers.Flatten())
         self.__model.add(tf.keras.layers.Dense(4096, activation='relu'))
+        self.__model.add(tf.keras.layers.Dropout(0.5))
         self.__model.add(tf.keras.layers.Dense(4096, activation='relu'))
+        self.__model.add(tf.keras.layers.Dropout(0.5))
+
         self.__model.add(tf.keras.layers.Dense(classes_num, activation='softmax'))
 
         self.__model.summary()
@@ -55,7 +58,10 @@ class VGGModel(NNInterface):
 
         model.add(Flatten())
         model.add(Dense(units=4096, activation="relu"))
+
         model.add(Dense(units=4096, activation="relu"))
+        model.add(Dense(units=4096, activation="relu"))
+
         model.add(Dense(units=classes_num, activation="softmax"))
 
     def update_output_path(self, output_path):
