@@ -42,6 +42,8 @@ for i in range(len(paths)):
         continue
     dir_path = os.path.join(args.output_path, str(labels[i]))
     image_name = os.path.basename(path)
+    print(image_name)
+    print(dir_path)
     args.output_path = os.path.join(dir_path, image_name)
     im = Image.open(path, 'r')
     im.save(args.output_path)
