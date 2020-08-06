@@ -89,6 +89,9 @@ def check_corrupted_images(args):
         print(path )
         Image.open(path)
 
+
+
+
 def main():
     random.seed(1234)
     np.random.seed(1234)
