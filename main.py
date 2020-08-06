@@ -150,7 +150,7 @@ def main():
                                  save_weights_only=False, mode='auto', save_freq=1)
     early = EarlyStopping(monitor='val_acc', min_delta=0, patience=20, verbose=1, mode='auto')
 
-    csv_logger = CSVLogger('log.csv', append=True, separator=';')
+    csv_logger = CSVLogger(os.path.join(args.output_path, 'log.csv'), append=True, separator=';')
 
     hist = network.fit_generator(generator=train_generator, steps_per_epoch=len(train_generator), validation_data=validation_generator, validation_steps=10,
                                epochs=args.num_epochs, callbacks=[checkpoint, early, csv_logger])
