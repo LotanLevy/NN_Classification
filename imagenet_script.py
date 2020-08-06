@@ -37,16 +37,15 @@ for dir in dirs:
         os.makedirs(dir_path)
 
 for i in range(len(paths)):
-    path = paths[i]
-    if not os.path.exists(path):
+    p = paths[i]
+    if not os.path.exists(p):
         continue
-    dir_path = os.path.join(args.output_path, str(labels[i]))
-    image_name = os.path.basename(path)
-    print(image_name)
-    print(dir_path)
-    args.output_path = os.path.join(dir_path, image_name)
-    im = Image.open(path, 'r')
-    im.save(args.output_path)
+    dir = os.path.join(args.output_path, str(labels[i]))
+    image_name = os.path.basename(p)
+
+    output_path = os.path.join(dir, image_name)
+    im = Image.open(p, 'r')
+    im.save(output_path)
 
 
 
