@@ -9,7 +9,7 @@ from Networks.TrainTestHelper import TrainTestHelper
 import argparse
 from traintest import train
 import random
-from tensorflow.python.keras.callbacks import ModelCheckpoint, EarlyStopping
+from tensorflow.python.keras.callbacks import ModelCheckpoint, EarlyStopping, CSVLogger
 
 import matplotlib.pyplot as plt
 from PIL import Image
@@ -150,11 +150,10 @@ def main():
                                  save_weights_only=False, mode='auto', save_freq=1)
     early = EarlyStopping(monitor='val_acc', min_delta=0, patience=20, verbose=1, mode='auto')
 
-
-
+    csv_logger = CSVLogger('log.csv', append=True, separator=';')
 
     hist = network.fit_generator(generator=train_generator, steps_per_epoch=len(train_generator), validation_data=validation_generator, validation_steps=10,
-                               epochs=args.num_epochs, callbacks=[checkpoint, early])
+                               epochs=args.num_epochs, callbacks=[checkpoint, early, csv_logger])
 
 
 
