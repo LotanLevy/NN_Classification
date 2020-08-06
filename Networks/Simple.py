@@ -14,17 +14,22 @@ class Simple(NNInterface):
         super().__init__(classes_num, input_size)
         self.output_path = None
         self.__model = tf.keras.Sequential([
-            tf.keras.layers.InputLayer(input_shape=(input_size[0],input_size[1], 3)),
-            tf.keras.layers.LayerNormalization(scale=(1. / 255)),
-            layers.Conv2D(32, 3, activation='relu'),
-            layers.MaxPooling2D(),
-            layers.Conv2D(32, 3, activation='relu'),
-            layers.MaxPooling2D(),
-            layers.Conv2D(32, 3, activation='relu'),
-            layers.MaxPooling2D(),
+            tf.keras.layers.LayerNormalization(scale=(1. / 255), input_shape=(input_size[0],input_size[1], 3)),
+            layers.Conv2D(32, 5, padding='same', activation='relu'),
+            layers.Conv2D(32, 5, padding='same', activation='relu'),
+            layers.MaxPooling2D(pool_size=(2, 2)),
+            layers.Dropout(0.25),
+            layers.Conv2D(64, 5, padding='same', activation='relu'),
+            layers.Conv2D(64, 5, padding='same', activation='relu'),
+            layers.MaxPooling2D(pool_size=(2, 2)),
+            layers.Dropout(0.25),
             layers.Flatten(),
-            layers.Dense(128, activation='relu'),
-            layers.Dense(classes_num)
+            layers.Dense(512, activation='relu'),
+            layers.Dropout(0.5),
+
+            layers.Dense(classes_num),
+            tf.keras.layers.Activation('softmax')
+
         ])
 
         self.__model.summary()

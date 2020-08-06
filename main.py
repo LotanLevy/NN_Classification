@@ -14,6 +14,7 @@ from tensorflow.python.keras.callbacks import ModelCheckpoint, EarlyStopping, CS
 import matplotlib.pyplot as plt
 from PIL import Image
 import io
+import datetime
 
 
 
@@ -144,19 +145,39 @@ def main():
     network.update_output_path(args.output_path)
 
     network.freeze_status()
-    optimizer = tf.keras.optimizers.Adam(learning_rate=args.learning_rate1)
-    loss = tf.keras.losses.CategoricalCrossentropy()
+    # optimizer = tf.keras.optimizers.Adam(learning_rate=args.learning_rate1)
+    # loss = tf.keras.losses.CategoricalCrossentropy()
+    #
+    # network.compile(optimizer=optimizer, loss=loss, metrics=['accuracy'])
+    #
+    # checkpoint = ModelCheckpoint("vgg16_1.h5", monitor='val_acc', verbose=1, save_best_only=True,
+    #                              save_weights_only=False, mode='auto', save_freq=1)
+    # early = EarlyStopping(monitor='val_acc', min_delta=0, patience=20, verbose=1, mode='auto')
+    #
+    # csv_logger = CSVLogger(os.path.join(args.output_path, 'log.csv'), append=True, separator=';')
+    #
+    # hist = network.fit_generator(generator=train_generator, steps_per_epoch=len(train_generator), validation_data=validation_generator, validation_steps=10,
+    #                            epochs=args.num_epochs, callbacks=[checkpoint, early, csv_logger], workers=4, use_multiprocessing=True)
 
-    network.compile(optimizer=optimizer, loss=loss, metrics=['accuracy'])
+    log_dir = os.path.join(
+        os.path.join(args.output_path, "amazon_logs\\fit\\" + datetime.datetime.now().strftime("%Y%m%d-%H%M%S")))
+    tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir=log_dir, histogram_freq=1)
 
-    checkpoint = ModelCheckpoint("vgg16_1.h5", monitor='val_acc', verbose=1, save_best_only=True,
+
+    optimizer = tf.keras.optimizers.SGD(lr=0.001, decay=1e-6, momentum=0.5, nesterov=True)
+
+    network.compile(optimizer=optimizer, loss='categorical_crossentropy', metrics=['accuracy'])
+
+    chackpoint_path = os.path.join(os.path.join(args.output_path, "vgg16_1.h5"))
+
+    checkpoint = ModelCheckpoint(chackpoint_path, monitor='val_acc', verbose=1, save_best_only=True,
                                  save_weights_only=False, mode='auto', save_freq=1)
     early = EarlyStopping(monitor='val_acc', min_delta=0, patience=20, verbose=1, mode='auto')
 
     csv_logger = CSVLogger(os.path.join(args.output_path, 'log.csv'), append=True, separator=';')
 
     hist = network.fit_generator(generator=train_generator, steps_per_epoch=len(train_generator), validation_data=validation_generator, validation_steps=10,
-                               epochs=args.num_epochs, callbacks=[checkpoint, early, csv_logger], workers=4, use_multiprocessing=True)
+                               epochs=args.num_epochs, callbacks=[checkpoint, csv_logger, tensorboard_callback], workers=4, use_multiprocessing=True)
 
 
 
