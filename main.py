@@ -156,7 +156,7 @@ def main():
     csv_logger = CSVLogger(os.path.join(args.output_path, 'log.csv'), append=True, separator=';')
 
     hist = network.fit_generator(generator=train_generator, steps_per_epoch=len(train_generator), validation_data=validation_generator, validation_steps=10,
-                               epochs=args.num_epochs, callbacks=[checkpoint, early, csv_logger])
+                               epochs=args.num_epochs, callbacks=[checkpoint, early, csv_logger], workers=4, use_multiprocessing=True)
 
 
 
