@@ -3,11 +3,9 @@
 import numpy as np
 import tensorflow as tf
 import os
-from dataloader import DataLoader
 import nn_builder
 from Networks.TrainTestHelper import TrainTestHelper
 import argparse
-from traintest import train
 import random
 from tensorflow.python.keras.callbacks import ModelCheckpoint, EarlyStopping, CSVLogger
 
@@ -20,24 +18,6 @@ import datetime
 
 
 
-def get_imagenet_prediction(image, hot_vec,  network, loss_func):
-    pred = network(image, training=False)
-    i = tf.math.argmax(pred[0])
-    loss = loss_func(hot_vec, pred)
-    return i, np.array(pred[0])[i], loss
-
-def save_predicted_results(test_images, labels, network, paths, loss_func, title, output_path):
-    with open(os.path.join(output_path, "{}.txt".format(title)), 'w') as f:
-        correct_sum = 0
-        for i in range(len(test_images)):
-            pred, score, loss = get_imagenet_prediction(test_images[i][np.newaxis, :,:,:], labels[i], network, loss_func)
-            f.write("{} {} {} {}\n".format(paths[i], pred, score, loss))
-            if int(pred) == int(labels[i]):
-                correct_sum += 1
-        f.write("correctness {}\n".format(correct_sum/len(test_images)))
-
-
-
 def get_args():
     parser = argparse.ArgumentParser(description='Process training arguments.')
     parser.add_argument('--nntype', default="VGGModel", help='The type of the network')
@@ -45,9 +25,6 @@ def get_args():
 
     parser.add_argument('--ds_path', type=str, required=True)
 
-    # parser.add_argument('--train_path', type=str, required=True)
-    # parser.add_argument('--val_path', type=str, required=True)
-    # parser.add_argument('--test_path', type=str, required=True)
     parser.add_argument('--output_path', type=str, default=os.getcwd(), help='The path to keep the output')
     parser.add_argument('--print_freq', '-pf', type=int, default=10)
     parser.add_argument('--learning_rate1', default=1e-3, type=float)
@@ -149,27 +126,10 @@ def main():
 
 
 
-
-
-    # dataloader = DataLoader("dataloader", args.train_path, args.val_path, args.test_path, args.cls_num, args.input_size,
-    #                         output_path=args.output_path, restart_config_path=args.restart_dataloader_config)
     network = nn_builder.get_network(args.nntype, cls_num, args.input_size)
     network.update_output_path(args.output_path)
 
     network.freeze_status()
-    # optimizer = tf.keras.optimizers.Adam(learning_rate=args.learning_rate1)
-    # loss = tf.keras.losses.CategoricalCrossentropy()
-    #
-    # network.compile(optimizer=optimizer, loss=loss, metrics=['accuracy'])
-    #
-    # checkpoint = ModelCheckpoint("vgg16_1.h5", monitor='val_acc', verbose=1, save_best_only=True,
-    #                              save_weights_only=False, mode='auto', save_freq=1)
-    # early = EarlyStopping(monitor='val_acc', min_delta=0, patience=20, verbose=1, mode='auto')
-    #
-    # csv_logger = CSVLogger(os.path.join(args.output_path, 'log.csv'), append=True, separator=';')
-    #
-    # hist = network.fit_generator(generator=train_generator, steps_per_epoch=len(train_generator), validation_data=validation_generator, validation_steps=10,
-    #                            epochs=args.num_epochs, callbacks=[checkpoint, early, csv_logger], workers=4, use_multiprocessing=True)
 
     log_dir = os.path.join(
         os.path.join(args.output_path, "amazon_logs\\fit\\" + datetime.datetime.now().strftime("%Y%m%d-%H%M%S")))
@@ -182,9 +142,9 @@ def main():
 
     chackpoint_path = os.path.join(os.path.join(args.output_path, "checkpoint"))
 
-    checkpoint = ModelCheckpoint(chackpoint_path, monitor='val_acc', save_best_only=True,
+    checkpoint = ModelCheckpoint(chackpoint_path, monitor='val_accuracy', save_best_only=True,
                                  save_weights_only=False, mode='max')
-    early = EarlyStopping(monitor='val_acc', min_delta=0, patience=20, verbose=1, mode='auto')
+    early = EarlyStopping(monitor='val_accuracy', min_delta=0, patience=20, verbose=1, mode='auto')
 
     csv_logger = CSVLogger(os.path.join(args.output_path, 'log.csv'), append=True, separator=';')
 

@@ -1,7 +1,7 @@
 
 import os
 import numpy as np
-from dataloader import read_dataset_map
+from utils import read_dataset_map
 from PIL import Image
 import argparse
 
