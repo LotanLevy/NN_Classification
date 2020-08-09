@@ -180,16 +180,16 @@ def main():
 
     network.compile(optimizer=optimizer, loss='categorical_crossentropy', metrics=['accuracy'])
 
-    chackpoint_path = os.path.join(os.path.join(args.output_path, "vgg16_1.h5"))
+    chackpoint_path = os.path.join(os.path.join(args.output_path, "checkpoint"))
 
-    checkpoint = ModelCheckpoint(chackpoint_path, monitor='val_acc', verbose=1, save_best_only=True,
-                                 save_weights_only=False, mode='auto', save_freq=1)
+    checkpoint = ModelCheckpoint(chackpoint_path, monitor='val_acc', save_best_only=True,
+                                 save_weights_only=False, mode='max')
     early = EarlyStopping(monitor='val_acc', min_delta=0, patience=20, verbose=1, mode='auto')
 
     csv_logger = CSVLogger(os.path.join(args.output_path, 'log.csv'), append=True, separator=';')
 
     hist = network.fit_generator(generator=train_generator, steps_per_epoch=len(train_generator), validation_data=validation_generator, validation_steps=10,
-                               epochs=args.num_epochs, callbacks=[checkpoint, csv_logger, tensorboard_callback],
+                               epochs=args.num_epochs, callbacks=[checkpoint, early, csv_logger, tensorboard_callback],
                                  workers=args.workers, use_multiprocessing=True)
 
 
