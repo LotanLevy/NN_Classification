@@ -66,13 +66,7 @@ def get_args():
 
 def check_corrupted_images(args):
     train_datagen = tf.keras.preprocessing.image.ImageDataGenerator(
-                                        rotation_range=20,
-                                        zoom_range=0.15,
-                                        width_shift_range=0.2,
-                                        height_shift_range=0.2,
-                                        shear_range=0.15,
-                                        horizontal_flip=True,
-                                        fill_mode="nearest",
+
                                        validation_split=0.2)
 
     train_generator = train_datagen.flow_from_directory(args.ds_path,
@@ -122,7 +116,16 @@ def main():
 
 
 
+
+
     train_datagen = tf.keras.preprocessing.image.ImageDataGenerator(
+                                        rotation_range=20,
+                                        zoom_range=0.15,
+                                        width_shift_range=0.2,
+                                        height_shift_range=0.2,
+                                        shear_range=0.15,
+                                        horizontal_flip=True,
+                                        fill_mode="nearest",
                                        validation_split=0.2)
 
     train_generator = train_datagen.flow_from_directory(args.ds_path,
