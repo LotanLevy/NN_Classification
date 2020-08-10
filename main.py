@@ -22,6 +22,9 @@ def get_args():
     parser.add_argument('--nntype', default="VGGModel", help='The type of the network')
     parser.add_argument('--input_size', type=int, nargs=2, default=(224, 224))
 
+    parser.add_argument('--ckpt', type=str,default=None)
+
+
     parser.add_argument('--ds_path', type=str, required=True)
 
     parser.add_argument('--output_path', type=str, default=os.getcwd(), help='The path to keep the output')
@@ -35,8 +38,6 @@ def get_args():
 
     parser.add_argument('--batch_size', '-bs', type=int, default=32, help='number of batches')
 
-    parser.add_argument('--restart_dataloader_config', type=str, default=None)
-    parser.add_argument('--restart_model_path', type=str, default=None)
 
     return parser.parse_args()
 
@@ -130,6 +131,9 @@ def main():
 
     network.freeze_status()
 
+    if args.ckpt_path is not None:
+        network.load_weights(args.ckpt).expect_partial() # expect_partial enables to ignore training information for prediction
+
     log_dir = os.path.join(
         os.path.join(args.output_path, "amazon_logs\\fit\\" + datetime.datetime.now().strftime("%Y%m%d-%H%M%S")))
     tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir=log_dir, histogram_freq=1)
@@ -142,7 +146,7 @@ def main():
     chackpoint_path = os.path.join(os.path.join(args.output_path, "checkpoint"))
 
     checkpoint = ModelCheckpoint(chackpoint_path, monitor='val_accuracy', save_best_only=True,
-                                 save_weights_only=False, mode='max')
+                                 save_weights_only=False, mode='max', verbose=1)
     early = EarlyStopping(monitor='val_accuracy', min_delta=0, patience=20, verbose=1, mode='auto')
 
     csv_logger = CSVLogger(os.path.join(args.output_path, 'log.csv'), append=True, separator=';')
