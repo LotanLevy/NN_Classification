@@ -131,7 +131,7 @@ def main():
 
     network.freeze_status()
 
-    if args.ckpt_path is not None:
+    if args.ckpt is not None:
         network.load_weights(args.ckpt).expect_partial() # expect_partial enables to ignore training information for prediction
 
     log_dir = os.path.join(
